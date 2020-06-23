@@ -20,6 +20,7 @@ import com.airbnb.lottie.samples.views.marquee
 import kotlinx.android.synthetic.main.fragment_player.*
 
 private const val RC_FILE = 1000
+private const val SVGA_FILE = 2000
 private const val RC_CAMERA_PERMISSION = 1001
 class PreviewFragment : BaseEpoxyFragment() {
 
@@ -95,12 +96,53 @@ class PreviewFragment : BaseEpoxyFragment() {
                         .show()
             }
         }
+
+        previewItemView {
+            id("assets_svg")
+            title(R.string.preview_svga)
+            icon(R.drawable.ic_storage)
+            clickListener { _ ->
+                val adapter = ArrayAdapter<String>(requireContext(), android.R.layout.select_dialog_item)
+                requireContext().assets.list("")?.asSequence()
+                        ?.filter { it.endsWith(".svga")}
+                        ?.forEach { adapter.add(it) }
+                AlertDialog.Builder(context)
+                        .setAdapter(adapter) { _, which ->
+                            val args = adapter.getItem(which)
+                            args?.let {
+                                startActivity(SVGADemoActivity.intent(requireContext(), it))
+                            }
+                        }
+                        .show()
+            }
+        }
+
+
+        previewItemView {
+            id("file_svg")
+            title(R.string.preview_svga_file)
+            icon(R.drawable.ic_storage)
+            clickListener { _ ->
+                try {
+                    val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                        type = "*/*"
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                    }
+                    startActivityForResult(Intent.createChooser(intent, "Select a SVGA file"),
+                            SVGA_FILE)
+                } catch (ex: ActivityNotFoundException) {
+                    // Potentially direct the user to the Market with a Dialog
+                    Toast.makeText(context, "Please install a File Manager.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode != Activity.RESULT_OK) return
         when (requestCode) {
             RC_FILE-> startActivity(PlayerActivity.intent(requireContext(), CompositionArgs(fileUri = data?.data)))
+            SVGA_FILE-> startActivity(SVGADemoActivity.intent(requireContext(), data?.data!!))
         }
     }
 

@@ -60,6 +60,7 @@ android {
 
 dependencies {
   implementation project(':lottie')
+  implementation project(':library')
   implementation 'androidx.multidex:multidex:2.0.1'
 
   implementation "androidx.fragment:fragment:1.2.1"
@@ -99,6 +100,8 @@ dependencies {
   implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
   implementation 'io.reactivex.rxjava2:rxjava:2.2.1'
   implementation 'com.github.bumptech.glide:glide:4.8.0'
+
+  implementation 'com.blankj:utilcodex:1.29.0'
 
   debugImplementation("androidx.fragment:fragment-testing:1.2.0-rc04")
 
