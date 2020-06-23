@@ -18,6 +18,7 @@ import com.opensource.svgaplayer.SVGAVideoEntity
 import kotlinx.android.synthetic.main.activity_svga.*
 import java.io.File
 import java.io.FileInputStream
+import java.net.URL
 
 
 class SVGADemoActivity : AppCompatActivity() {
@@ -44,27 +45,43 @@ class SVGADemoActivity : AppCompatActivity() {
                         .toString(),
                         object : ParseCompletion{
                     override fun onComplete(videoItem: SVGAVideoEntity) {
-                        Log.d(TAG, "decodeFromAssets onComplete")
+                        Log.d(TAG, "decodeFromInputStream onComplete")
                         svgaImageView?.setVideoItem(videoItem)
                         svgaImageView?.stepToFrame(0, true)
                     }
 
                     override fun onError() {
-                        Log.d(TAG, "decodeFromAssets onError")
+                        Log.d(TAG, "decodeFromInputStream onError")
                     }
                 }, true)
-            } else if (it is String){
-                parser.decodeFromAssets(it, object : ParseCompletion{
-                    override fun onComplete(videoItem: SVGAVideoEntity) {
-                        Log.d(TAG, "decodeFromAssets onComplete")
-                        svgaImageView?.setVideoItem(videoItem)
-                        svgaImageView?.stepToFrame(0, true)
-                    }
+            } else if (it is String) {
+                if (it.startsWith("http") || it.startsWith("https")) {
+                    val url = URL(it)
+                    parser.decodeFromURL(url, object : ParseCompletion{
+                        override fun onComplete(videoItem: SVGAVideoEntity) {
+                            Log.d(TAG, "decodeFromURL onComplete")
+                            svgaImageView?.setVideoItem(videoItem)
+                            svgaImageView?.stepToFrame(0, true)
+                        }
 
-                    override fun onError() {
-                        Log.d(TAG, "decodeFromAssets onError")
-                    }
-                })
+                        override fun onError() {
+                            Log.d(TAG, "decodeFromURL onError")
+                        }
+                    })
+                } else {
+                    parser.decodeFromAssets(it, object : ParseCompletion{
+                        override fun onComplete(videoItem: SVGAVideoEntity) {
+                            Log.d(TAG, "decodeFromAssets onComplete")
+                            svgaImageView?.setVideoItem(videoItem)
+                            svgaImageView?.stepToFrame(0, true)
+                        }
+
+                        override fun onError() {
+                            Log.d(TAG, "decodeFromAssets onError")
+                        }
+                    })
+                }
+
             }
         }
 

@@ -121,7 +121,7 @@ class PreviewFragment : BaseEpoxyFragment() {
         previewItemView {
             id("file_svg")
             title(R.string.preview_svga_file)
-            icon(R.drawable.ic_storage)
+            icon(R.drawable.ic_file)
             clickListener { _ ->
                 try {
                     val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
@@ -134,6 +134,24 @@ class PreviewFragment : BaseEpoxyFragment() {
                     // Potentially direct the user to the Market with a Dialog
                     Toast.makeText(context, "Please install a File Manager.", Toast.LENGTH_SHORT).show()
                 }
+            }
+        }
+
+        previewItemView {
+            id("url_svg")
+            title(R.string.preview_svga_url)
+            icon(R.drawable.ic_network)
+            clickListener { _ ->
+                val urlOrJsonView = EditText(context)
+                urlOrJsonView.setText("http://static.missevan.com/gifts/effects/114-web.svga")
+                AlertDialog.Builder(context)
+                        .setTitle(R.string.preview_svga_url_hint)
+                        .setView(urlOrJsonView)
+                        .setPositiveButton(R.string.preview_load) { _, _ ->
+                            startActivity(SVGADemoActivity.intent(requireContext(), urlOrJsonView.text.toString()))
+                        }
+                        .setNegativeButton(R.string.preview_cancel) { dialog, _ -> dialog.dismiss() }
+                        .show()
             }
         }
     }
